@@ -2,6 +2,8 @@
 
 Have you ever, while watching something on your plex server, wanted to easily extract a clip out of a good movie or tv show you're watching to share it with your friend, family or the world? While this was always possible, the process can be complex for something "so simple".
 
+![](https://github.com/jo-nike/clipplex/blob/master/example.gif)
+
 ## Description
 
 An in-depth paragraph about your project and overview of use.
