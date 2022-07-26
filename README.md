@@ -42,7 +42,7 @@ networks:
   docker_internal_network:
     name: plex_stack
   clipplex:
-    image: clipplex:0.0.3
+    image: jonnike/clipplex:latest
     container_name: clipplex-alpha
     networks:
       - docker_internal_network
