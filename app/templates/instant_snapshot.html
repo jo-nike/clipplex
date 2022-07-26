@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mt-4">Snapshot</h1>
+<iframe name="dataframe" id="dataframe" width="700" height="200"></iframe>
+
+<form action="/get_current_stream" target="dataframe">
+    <label for="username">Plex Username: </label>
+    <input type="text" id="username" name="username" value="jonike"><br><br>
+    <input type="submit" value="Get Info">
+  </form>
+
+  <form action="/get_instant_snapshot" target="dataframe">
+    <input type="submit" value="Snapshot!">
+  </form>
+    {% for image in images %}
+    <div class="responsive">
+    <div class="gallery">
+        <a target="_blank" href="{{ image }}">
+        <img src="{{ image }}" width="600" height="400">
+        </a>
+    </div>
+    </div>
+    {% endfor %}
+<div class="clearfix"></div>
+{% endblock %}

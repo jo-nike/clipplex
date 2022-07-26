@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="mt-4">Video</h1>
+  <p><span id="Info"></span></p>
+  <p><span id="Title"></span></p>
+  <p><span id="Current_Time"></span></p>
+  <div id="Current_time_value" style="display: none;"></div>
+
+  <form action="" method="post" target="dataframe" novalidate>
+    {{ form.csrf_token }}
+    <p>
+      {{ form.user.label }} {{ form.user(id="username_input", size=15) }} <i id='check_current_stream' class='fas fa-eye' onclick='check_stream();'></i><br>
+      <table>
+        <tr>
+          <td>
+            Start time:
+          </td>
+          <td>
+            <i class="fas fa-minus-circle" onclick="removeStartTime();"></i>
+          </td>
+          <td>
+            {{ form.start_time_hour(id="start_hour", size=2, placeholder="HH", maxlength=2) }}
+          </td>
+          <td>
+            {{ form.start_time_minute(id="start_minute", size=2, placeholder="MM", maxlength=2) }}
+          </td>
+          <td>
+            {{ form.start_time_sec(id="start_second", size=2, placeholder="SS", maxlength=2) }}
+          </td>
+          <td>
+            <button type='button' onclick='add_time_to_end(15);' id='add_15_sec' class='quick_time_button'>+15s</button>
+          </td>
+          <td>
+            <button type='button' onclick='add_time_to_end(30);' id='add_30_sec' class='quick_time_button'>+30s</button>
+          </td>
+          <td>
+            <button type='button' onclick='add_time_to_end(60);' id='add_60_sec' class='quick_time_button'>+1m</button>
+          </td>
+          <td>        
+            <button type='button' onclick='add_time_to_end(120);' id='add_30_sec' class='quick_time_button'>+2m</button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            End time:
+          </td>
+          <td>
+            <i class="fas fa-minus-circle" onclick="removeEndTime();"></i>
+          </td>
+          <td>
+            {{ form.end_time_hour(id="end_hour", size=2, placeholder="HH", maxlength=2) }}
+          </td>
+          <td>
+            {{ form.end_time_minute(id="end_minute", size=2, placeholder="MM", maxlength=2)  }} 
+          </td>
+          <td>
+            {{ form.end_time_sec(id="end_second", size=2, placeholder="SS", maxlength=2)  }}
+          </td>
+        </tr>
+      </table>
+      <br>
+      <!--
+      <div id="advanced_settings" onclick="setting_table_visibility()"><i class="fas fa-cog"></i> Advanced settings</div>
+      <table id="advanced_settings_table" style="display:none">
+        <tr>
+          <td>
+            Format
+          </td>
+          <td>
+              <input checked type="checkbox" id="MP4" name="video_format" value="MP4">
+              <label for="html">MP4</label>
+              <input type="checkbox" id="GIF" name="video_format" value="GIF">
+              <label for="css">GIF</label><br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Subtitles
+          </td>
+          <td>
+              <input checked type="radio" id="subtitle_off" name="subtile_value" value="OFF">
+              <label for="html">OFF</label>
+              <input type="radio" id="subtitle_on" name="subtile_value" value="ON">
+              <label for="css">ON</label><br>
+          </td>
+          <td>
+            <select name="subtitle_version" id="subtitle_version">
+              <option value="sub_empty"></option>
+              <option value="sub_english_1">English</option>
+              <option value="sub_french_1">French</option>
+              <option value="sub_spanish_1">Spanish</option>
+              <option value="sub_something_1">Arabic</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+    -->
+      <button type='button' onclick='createVideo()' id='create_video_btn' class='create_video'>Create video</button>
+    </p>
+    </form>
+
+<table>
+  {% for video in videos %}
+    {% set file_path = video['file_path'] %}
+    {% set title = video['title'] %}
+    {% set original_time = video['original_start_time'] %}
+    {% set creator = video['username'] %}
+    {% set show = video['show'] %}
+    {% set episode = video['episode_number'] %}
+    {% set season = video['season_number'] %}
+      <tr>
+        <td style="padding-right: 10px;">
+          <video width="768" height="432" controls>
+            <source src="{{file_path}}" type="video/mp4" />
+          </video>
+        </td>
+        <td>
+          <a href="{{file_path}}" download=""><i class="fas fa-download iconColumn" style="font-size: 50px;"></i></a><br><br>
+          <button type='button' class="fas fa-trash-alt" onclick='remove_file("{{file_path}}")' class="iconColumn" style="font-size: 50px; color: red;"></button><br><br>
+          <img src="static/icons/streamable.png" height="50px" onclick='upload_streamable("{{file_path}}")' width="75px" class="iconColumn"><br><br>
+          <img src="static/icons/imgur.png" height="50px" width="90px" class="iconColumn"><br>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <i id="{{loop.index}}" class="fas fa-plus-circle" onclick=viewDetails(this.id)></i>
+        </td>
+      </tr>
+      <tr id="details_{{loop.index}}" class="extraVideoDetails">
+        <td>
+        {% if show|length %}
+          <p>
+            <b>Show: </b>{{show}}<br>
+            <b>Episode Name: </b>{{title}}<br>
+            <b>Season/Episode: </b>S{{season}}E{{episode}}<br>
+            <b>Time taken: </b>{{original_time}}<br>
+            <b>Created By: </b>{{creator}}<br>
+          </p>
+        {% else %}
+        <p>
+          <b>Movie: </b>{{title}}<br>
+          <b>Time taken: </b>{{original_time}}<br>
+          <b>Created By: </b>{{creator}}<br>
+        </p> 
+        {% endif %}
+        </td>
+      </tr>
+  {% endfor %}
+</table>
+
+
+
+<div class="clearfix"></div>
+
+<script>
+  function viewDetails(id){
+    if($("#details_"+id).is(":visible")){
+      $("#"+id).attr("class","fas fa-plus-circle");
+      $("#details_"+id).hide()
+    } else{
+      $("#"+id).attr("class","fas fa-minus-circle");
+      $("#details_"+id).show();
+    }
+  }
+  $(".extraVideoDetails").hide();
+  function createVideo(){
+    var username = document.getElementById("username_input").value
+    var start_hour = document.getElementById("start_hour").value
+    var start_minute = document.getElementById("start_minute").value
+    var start_second = document.getElementById("start_second").value
+    var end_hour = document.getElementById("end_hour").value
+    var end_minute = document.getElementById("end_minute").value
+    var end_second = document.getElementById("end_second").value
+    const Http = new XMLHttpRequest();
+    const url="/create_video?username="+username+"&start_hour="+start_hour+"&start_minute="+start_minute+"&start_second="+start_second+"&end_hour="+end_hour+"&end_minute="+end_minute+"&end_second="+end_second
+    Http.open("POST", url, true)
+    $('#layoutSidenav').css({'filter': 'blur(8px)', '-webkit-filter': 'blur(8px)'})
+    $('body').append('<div style="" id="loadingDiv"><div class="loader"></div><div class="loaderSecondLine">Creating video...</div></div>');
+    Http.onload = function (e) {
+      if (Http.readyState === 4) {
+        if (Http.status === 200) {
+          console.log(Http.responseText);
+          location.reload();
+        } else {
+          $('#loadingDiv').remove()
+          $('#layoutSidenav').css({'filter': '', '-webkit-filter': ''})
+          $('#Info').text("Error: Video Creation: "+Http.statusText)
+          console.error(Http.statusText);
+        }
+      }
+    };
+    Http.onerror = function (e) {
+      console.error(Http.statusText);
+    };
+    Http.send(null);
+  }
+  function removeStartTime(){
+    document.getElementById("start_hour").value = "";
+    document.getElementById("start_minute").value = "";
+    document.getElementById("start_second").value = "";
+  }
+  function removeEndTime(){
+    document.getElementById("end_hour").value = "";
+    document.getElementById("end_minute").value = "";
+    document.getElementById("end_second").value = "";
+  }
+  function upload_streamable(file){
+    const Http = new XMLHttpRequest();
+    const url='/streamable_upload?file_path='+file;
+    Http.open("POST", url, true);
+    $('#layoutSidenav').css({'filter': 'blur(8px)', '-webkit-filter': 'blur(8px)'})
+    $('body').append('<div style="" id="loadingDiv"><div class="loader"></div><div class="loaderSecondLine">Uploading video...</div></div>');
+    Http.onload = function (e) {
+      if (Http.readyState === 4) {
+        if (Http.status === 200) {
+          const obj = JSON.parse(Http.responseText);
+          $('#loadingDiv').remove()
+          $('#layoutSidenav').css({'filter': '', '-webkit-filter': ''})
+          $('#Info').text("Video uploaded to Streamable. URL: https://streamable.com/"+obj.shortcode)
+        } else {
+          console.error(Http.statusText);
+          $('#loadingDiv').remove()
+          $('#layoutSidenav').css({'filter': '', '-webkit-filter': ''})
+          $('#Info').text("Streamable: "+Http.statusText)
+        }
+      }
+    };
+    Http.send();
+  }
+  function remove_file(file){
+    const Http = new XMLHttpRequest();
+    const url='/remove_file?file_path='+file;
+    Http.open("POST", url);
+    Http.send();
+    location.reload();
+  }
+  function setting_table_visibility(){
+    var current_vis_status = document.getElementById("advanced_settings_table");
+    if (current_vis_status.style.display === "none") {
+      current_vis_status.style.display = "block";
+    } else {
+      current_vis_status.style.display = "none";
+    }
+  }
+  function add_time_to_end(add_time){
+    var start_hour = document.getElementById("start_hour").value
+    var start_minute = document.getElementById("start_minute").value
+    var start_second = document.getElementById("start_second").value
+    if (start_second) {
+      var start_time = start_hour+":"+start_minute+":"+start_second
+      const Http = new XMLHttpRequest();
+      Http.onload = function() {
+          var hour = this.responseText.split(":")[0]
+          var minute = this.responseText.split(":")[1]
+          var second = this.responseText.split(":")[2]
+          document.getElementById("end_hour").value = hour
+          document.getElementById("end_minute").value = minute
+          document.getElementById("end_second").value = second
+      }
+      const url='/quick_add_time_to_start_time?start_time='+start_time+'&time_to_add='+add_time;
+      Http.open("POST", url);
+      Http.send();
+    }
+  }
+  function setAsStartTime(){
+    var current_time = document.getElementById("Current_time_value").innerHTML
+    var hour = current_time.split(":")[0]
+    var minute = current_time.split(":")[1]
+    var second = current_time.split(":")[2]
+    document.getElementById("start_hour").value = hour
+    document.getElementById("start_minute").value = minute
+    document.getElementById("start_second").value = second
+  }
+  function check_stream(){
+      var username = document.getElementById("username_input").value;
+      const Http = new XMLHttpRequest();
+      Http.onload = function() {
+        const obj = JSON.parse(this.responseText);
+        if (obj.message) {
+          document.getElementById("Title").innerHTML = "<b>Error: </b>" + obj.message;
+          document.getElementById("Current_Time").innerHTML = "";
+        } else {
+        document.getElementById("Title").innerHTML = "<b>Title: </b>" + obj.media_title;
+        document.getElementById("Current_Time").innerHTML = "<b>Current time: </b>" + obj.current_time + " " + "<i id='set_current_time_as_start_time' class='fas fa-clipboard-check' onclick='setAsStartTime();'></i><br>";
+        document.getElementById("Current_time_value").innerHTML = obj.current_time
+        }
+      }
+      const url='/get_current_stream?username='+username;
+      Http.open("POST", url);
+      Http.send();
+  }
+</script>
+{% endblock %}

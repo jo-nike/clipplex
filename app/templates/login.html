@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<body style="margin: 0; overflow: auto;">
+<div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+        <div id="sign-in-alert" class="alert alert-danger login-alert"></div>
+    </div>
+</div>
+<div class="login-body-container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="login-container">
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3">
+                        <div>
+                            <button id="sign-in-plex" class="login-button"><i class="fas fa-sign-in-alt"></i>&nbsp; Sign In with Plex</button>
+                        </div>
+                        <div class="remember-group">
+                            <label class="control-label">
+                                <input type="checkbox" id="remember_me_plex" name="remember_me_plex" title="for 30 days" value="1" checked="checked" /> Remember me
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../static/js/jquery-3.6.0.min.js"></script>
+<script src="../static/js/platform.min.js"></script>
+<script src="../static/js/scripts.js"></script>
+<script>
+    function OAuthSuccessCallback(authToken) {
+        signIn(true, authToken);
+    }
+    
+    function OAuthErrorCallback() {
+        $('#sign-in-alert').text('Error communicating with Plex.tv.').show();
+    }
+
+    $('#sign-in-plex').click(function() {
+        PlexOAuth(OAuthSuccessCallback, OAuthErrorCallback);
+    });
+
+    function signIn(plex, token) {
+        const username = plex ? null : $('#username').val();
+        const password = plex ? null : $('#password').val();
+        const remember_me = plex ? ($('#remember_me_plex').is(':checked') ? '1' : '0')
+                : ($('#remember_me').is(':checked') ? '1' : '0');
+
+        var data = {
+            username: username,
+            password: password,
+            token: token,
+            remember_me: remember_me
+        };
+        var x_plex_headers = getPlexHeaders();
+        data = $.extend(data, x_plex_headers);
+        console.log(data)
+        $.ajax({
+            url: '/signin',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            statusCode: {
+                200: function(xhr, status) {
+                   window.location = "redirect?redirect_uri=${redirect_uri}";
+                },
+                401: function(xhr, status) {
+                    $('#sign-in-alert').text('Invalid Plex Login.').show();
+                },
+                429: function(xhr, status) {
+                    var retry = Math.ceil(xhr.getResponseHeader('Retry-After') / 60)
+                    $('#sign-in-alert').text('Too many login attempts. Try again in ' + retry + ' minute(s).').show();
+                },
+                500: function(xhr, status) {
+                    $('#sign-in-alert').text('Fuckkkkkkkkkkkkk no. Internal Failure.').show();
+                }
+            },
+            complete: function() {
+                $('.login-container button').prop('disabled', false);
+                $('#sign-in-plex').html('<i class="fas fa-sign-in-alt"></i>&nbsp; Sign In with Plex');
+            }
+        });
+    }
+</script>
+{% endblock %}

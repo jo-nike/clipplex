@@ -1,0 +1,6 @@
+Flask==2.0.2
+requests==2.26.0
+flask_wtf==0.14.3
+jinja2==3.0
+Werkzeug==2.0.0
+ffmpeg-python==0.2.0
