@@ -34,6 +34,9 @@ Port: Port 5000 is used to serve the frontend. (yes I will serve flask with guni
 
 Network: Need to be on the same network as your plex instance.
 
+```
+docker run -d --name clipplex -p 9945:5000 -v /media:/media -v /volumes/clipplex:/app/app/static/media --restart always -e PUID=1000 -e PGID=1000 -e TZ=America/New_York -e PLEX_URL=YOURPLEXURL -e PLEX_TOKEN=YOURPLEXTOKEN jonnike/clipplex:latest
+```
 
 ## Docker Compose Example
 ```
