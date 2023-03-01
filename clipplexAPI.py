@@ -161,7 +161,7 @@ class Video:
                     vcodec="libx264", 
                     acodec="libvorbis", 
                     pix_fmt="yuv420p", 
-                    crf=18, 
+                    crf=20, 
                     **{"metadata:g:0":f"title={self.metadata_title}", 
                     "metadata:g:1":f"season_number={self.metadata_season}", 
                     "metadata:g:2":f"show={self.metadata_showname}",
