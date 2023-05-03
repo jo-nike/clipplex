@@ -142,12 +142,14 @@ class Video:
         self.metadata_username = plex_data.username
         if plex_data.media_type == "episode":
             self.metadata_season = plex_attributes["parentIndex"]
-            self.metadata_episode_number = plex_attributes["index"]
             self.metadata_showname = plex_attributes["grandparentTitle"]
+            if "index" in plex_attributes:
+                self.metadata_episode_number = plex_attributes["index"]
+            self.metadata_episode_number = "none"
         else:
             self.metadata_season = ""
-            self.metadata_episode_number = ""
             self.metadata_showname = ""
+            self.metadata_episode_number = ""
         self.time = time
         self.duration = duration
         self.file_name = file_name
