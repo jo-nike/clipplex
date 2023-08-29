@@ -155,13 +155,16 @@ class Video:
     def extract_video(self):
         (
             ffmpeg
-            .input(self.media_path, ss=self.time, t=self.duration)
-            .output(f"{MEDIA_STATIC_PATH}/videos/{self.file_name}.mp4", 
+            .input(self.media_path)
+            .output(f"{MEDIA_STATIC_PATH}/videos/{self.file_name}.mp4",
+                    ss=self.time,
+                    t=self.duration, 
                     map_metadata=-1, 
                     vcodec="libx264", 
                     acodec="libvorbis", 
                     pix_fmt="yuv420p", 
-                    crf=18, 
+                    crf=18,
+                    vf=f"subtitles={self.media_path}",
                     **{"metadata:g:0":f"title={self.metadata_title}", 
                     "metadata:g:1":f"season_number={self.metadata_season}", 
                     "metadata:g:2":f"show={self.metadata_showname}",
