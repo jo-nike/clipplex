@@ -58,6 +58,9 @@
             {{ form.end_time_sec(id="end_second", size=2, placeholder="SS", maxlength=2)  }}
           </td>
         </tr>
+        <tr>
+          <input type="checkbox" id="subtitles" /> Subtitles (Will take way longer)
+        </tr>
       </table>
       <br>
       <!--
@@ -172,8 +175,9 @@
     var end_hour = document.getElementById("end_hour").value
     var end_minute = document.getElementById("end_minute").value
     var end_second = document.getElementById("end_second").value
+    var subs = document.getElementById("subtitles").checked
     const Http = new XMLHttpRequest();
-    const url="/create_video?username="+username+"&start_hour="+start_hour+"&start_minute="+start_minute+"&start_second="+start_second+"&end_hour="+end_hour+"&end_minute="+end_minute+"&end_second="+end_second
+    const url="/create_video?username="+username+"&start_hour="+start_hour+"&start_minute="+start_minute+"&start_second="+start_second+"&end_hour="+end_hour+"&end_minute="+end_minute+"&end_second="+end_second+"&subs="+subs
     Http.open("POST", url, true)
     $('#layoutSidenav').css({'filter': 'blur(8px)', '-webkit-filter': 'blur(8px)'})
     $('body').append('<div style="" id="loadingDiv"><div class="loader"></div><div class="loaderSecondLine">Creating video...</div></div>');

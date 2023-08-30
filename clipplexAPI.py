@@ -133,7 +133,7 @@ class Snapshot:
         a = subprocess.call(cmd, shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 
 class Video:
-    def __init__(self, plex_data: PlexInfo, time: str, duration, file_name: str):
+    def __init__(self, plex_data: PlexInfo, time: str, duration, file_name: str, subs: str):
         self.media_path = plex_data.media_path
         plex_attributes = list(list(plex_data.media_path_xml))[0].attrib
         self.metadata_title = plex_attributes["title"]
@@ -151,28 +151,48 @@ class Video:
         self.time = time
         self.duration = duration
         self.file_name = file_name
+        self.subs = subs
 
     def extract_video(self):
-        (
-            ffmpeg
-            .input(self.media_path)
-            .output(f"{MEDIA_STATIC_PATH}/videos/{self.file_name}.mp4",
-                    ss=self.time,
-                    t=self.duration, 
-                    map_metadata=-1, 
-                    vcodec="libx264", 
-                    acodec="libvorbis", 
-                    pix_fmt="yuv420p", 
-                    crf=18,
-                    vf=f"subtitles={self.media_path}",
-                    **{"metadata:g:0":f"title={self.metadata_title}", 
-                    "metadata:g:1":f"season_number={self.metadata_season}", 
-                    "metadata:g:2":f"show={self.metadata_showname}",
-                    "metadata:g:3":f"episode_id={self.metadata_episode_number}",
-                    "metadata:g:4":f"comment={self.metadata_current_media_time}",
-                    "metadata:g:5":f"artist={self.metadata_username}"})
-            .run(capture_stdout=True)
-        )
+        if self.subs=="true":
+            (
+                ffmpeg
+                .input(self.media_path)
+                .output(f"{MEDIA_STATIC_PATH}/videos/{self.file_name}.mp4",
+                        ss=self.time,
+                        t=self.duration, 
+                        map_metadata=-1, 
+                        vcodec="libx264", 
+                        acodec="libvorbis", 
+                        pix_fmt="yuv420p", 
+                        crf=18,
+                        vf=f"subtitles={self.media_path}",
+                        **{"metadata:g:0":f"title={self.metadata_title}", 
+                        "metadata:g:1":f"season_number={self.metadata_season}", 
+                        "metadata:g:2":f"show={self.metadata_showname}",
+                        "metadata:g:3":f"episode_id={self.metadata_episode_number}",
+                        "metadata:g:4":f"comment={self.metadata_current_media_time}",
+                        "metadata:g:5":f"artist={self.metadata_username}"})
+                .run(capture_stdout=True)
+            )
+        else:
+            (
+                ffmpeg
+                .input(self.media_path,ss=self.time,t=self.duration)
+                .output(f"{MEDIA_STATIC_PATH}/videos/{self.file_name}.mp4",
+                        map_metadata=-1, 
+                        vcodec="libx264", 
+                        acodec="libvorbis", 
+                        pix_fmt="yuv420p", 
+                        crf=18,
+                        **{"metadata:g:0":f"title={self.metadata_title}", 
+                        "metadata:g:1":f"season_number={self.metadata_season}", 
+                        "metadata:g:2":f"show={self.metadata_showname}",
+                        "metadata:g:3":f"episode_id={self.metadata_episode_number}",
+                        "metadata:g:4":f"comment={self.metadata_current_media_time}",
+                        "metadata:g:5":f"artist={self.metadata_username}"})
+                .run(capture_stdout=True)
+            )
 
 class Utils:
     def __init__(self, offset: int=0):
