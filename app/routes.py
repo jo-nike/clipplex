@@ -39,17 +39,18 @@ def create_video():
     _pad_time = clipplexAPI.Utils()._pad_time
     start = f"{_pad_time(args.get('start_hour'))}:{_pad_time(args.get('start_minute'))}:{_pad_time(args.get('start_second'))}"
     end = f"{_pad_time(args.get('end_hour'))}:{_pad_time(args.get('end_minute'))}:{_pad_time(args.get('end_second'))}"
-    result = get_instant_video(args.get('username'), start, end)
+    subs = args.get('subs')
+    result = get_instant_video(args.get('username'), start, end, subs)
     return jsonify(result)
 
-def get_instant_video(username, start, end):
+def get_instant_video(username, start, end, subs):
     plex_data = clipplexAPI.PlexInfo(username)
     clip_time = clipplexAPI.Utils().calculate_clip_time(start, end)
     media_name = plex_data.media_title.replace(" ", "")
     file_name = f"{username}_{media_name}_{int(time.time())}"
     current_media_time = plex_data.current_media_time_str
     print(f"Creating video of {clip_time} seconds starting at {start} for user {username} for file {plex_data.media_path}")
-    video = clipplexAPI.Video(plex_data, start, clip_time, file_name)
+    video = clipplexAPI.Video(plex_data, start, clip_time, file_name, subs)
     video.extract_video()
     return {"result":"success"}
 

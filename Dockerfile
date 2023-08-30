@@ -9,6 +9,9 @@ RUN apk --no-cache add ffmpeg
 RUN apk --no-cache add python3
 RUN apk --no-cache add python3-dev
 RUN apk --no-cache add py-pip
+RUN apk --no-cache add fontconfig ttf-freefont font-noto terminus-font \ 
+  && fc-cache -f \ 
+  && fc-list | sort 
 RUN cd /usr/bin \
   && ln -sf python3.9 python
 ENV TZ=America/New_York
